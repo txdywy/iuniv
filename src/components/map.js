@@ -22,18 +22,30 @@ function getMarkerColor(score) {
   return '#ef4444';
 }
 
-// ── Tile style ──
+// ── Tile styles ──
+const MAP_STYLES = {
+  dark: [
+    'https://a.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}@2x.png',
+    'https://b.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}@2x.png',
+    'https://c.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}@2x.png',
+  ],
+  light: [
+    'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+    'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+    'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+  ],
+  satellite: [
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  ],
+};
+
 const MAP_STYLE = {
   version: 8,
   name: 'UniMap',
   sources: {
     osm: {
       type: 'raster',
-      tiles: [
-        'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-        'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-        'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
-      ],
+      tiles: MAP_STYLES.dark,
       tileSize: 256,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
       maxzoom: 19,
@@ -315,6 +327,9 @@ export async function initMap(universities) {
   // ── 3D Toggle ──
   setup3DToggle();
 
+  // ── Style Toggle ──
+  setupStyleToggle();
+
   // ── Zoom indicator ──
   const zoomIndicator = document.getElementById('zoom-indicator');
   map.on('zoom', () => {
@@ -434,6 +449,33 @@ function setup3DToggle() {
       map.easeTo({ pitch: 60, bearing: -20, duration: 1500 });
     } else {
       map.easeTo({ pitch: 0, bearing: 0, duration: 1000 });
+    }
+  });
+}
+
+function setupStyleToggle() {
+  const btn = document.getElementById('btn-style');
+  if (!btn) return;
+  const styles = ['dark', 'light', 'satellite'];
+  let currentIdx = 0;
+
+  btn.addEventListener('click', () => {
+    currentIdx = (currentIdx + 1) % styles.length;
+    const styleName = styles[currentIdx];
+
+    // Change title and state
+    btn.setAttribute('title', `Map Style: ${styleName.charAt(0).toUpperCase() + styleName.slice(1)}`);
+    
+    // Switch active state highlight
+    if (styleName !== 'dark') {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+
+    const source = map.getSource('osm');
+    if (source) {
+      source.setTiles(MAP_STYLES[styleName]);
     }
   });
 }
