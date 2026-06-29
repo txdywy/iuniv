@@ -22,30 +22,20 @@ function getMarkerColor(score) {
   return '#ef4444';
 }
 
-// ── Dark tile style ──
-const DARK_STYLE = {
+// ── Tile style ──
+const MAP_STYLE = {
   version: 8,
-  name: 'UniMap Dark',
+  name: 'UniMap',
   sources: {
     osm: {
       type: 'raster',
       tiles: [
-        'https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png',
-        'https://b.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png',
-        'https://c.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png',
+        'https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+        'https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
+        'https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png',
       ],
       tileSize: 256,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-      maxzoom: 19,
-    },
-    labels: {
-      type: 'raster',
-      tiles: [
-        'https://a.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png',
-        'https://b.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png',
-        'https://c.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png',
-      ],
-      tileSize: 256,
       maxzoom: 19,
     },
   },
@@ -55,20 +45,6 @@ const DARK_STYLE = {
       type: 'raster',
       source: 'osm',
       paint: {
-        'raster-brightness-min': 0.35,
-        'raster-brightness-max': 1.0,
-        'raster-contrast': 0.15,
-        'raster-saturation': 0.5,
-        'raster-fade-duration': 0,
-      },
-    },
-    {
-      id: 'labels',
-      type: 'raster',
-      source: 'labels',
-      paint: {
-        'raster-brightness-min': 0.2,
-        'raster-brightness-max': 1.0,
         'raster-fade-duration': 0,
       },
     },
@@ -201,7 +177,7 @@ function toGeoJSON(universities) {
 export async function initMap(universities) {
   map = new maplibregl.Map({
     container: 'map',
-    style: DARK_STYLE,
+    style: MAP_STYLE,
     center: [20, 20],
     zoom: 2.2,
     minZoom: 1.5,
