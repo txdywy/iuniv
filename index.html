@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniMap — Global University Explorer</title>
+  <meta name="description" content="Explore every university on Earth. Interactive map with rankings, scores, and detailed information for 9,000+ institutions worldwide." />
+  <meta name="theme-color" content="#06080f" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-[#06080f] text-white overflow-hidden">
+
+  <!-- Loading Screen -->
+  <div id="loader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#06080f]">
+    <div class="relative mb-8">
+      <div class="loader-ring"></div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <svg class="w-7 h-7 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+    </div>
+    <h1 class="loader-text text-xl font-bold tracking-wide bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">UniMap</h1>
+    <p class="text-[13px] text-white/25 mt-2">Loading global university data…</p>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="h-screen w-screen flex">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-[380px] h-full flex-shrink-0 z-30 flex flex-col">
+
+      <!-- Header -->
+      <div class="px-4 pt-4 pb-3">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">UniMap</h1>
+            <p class="text-[10px] text-white/20 font-medium tracking-widest uppercase">Global University Explorer</p>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="relative group">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Search universities, countries…"
+            class="search-input w-full pl-9 pr-4 py-2 rounded-lg text-sm"
+          />
+          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-white/15 border border-white/8 rounded">
+            /
+          </kbd>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="px-4 pb-2">
+        <div class="flex flex-wrap gap-1.5" id="filter-chips">
+          <button class="filter-chip active" data-filter="all">
+            <span class="chip-dot bg-white/30"></span>All
+          </button>
+          <button class="filter-chip" data-filter="top100">
+            <span class="chip-dot bg-yellow-400"></span>Top 100
+          </button>
+          <button class="filter-chip" data-filter="top500">
+            <span class="chip-dot bg-blue-400"></span>Top 500
+          </button>
+          <button class="filter-chip" data-filter="research">
+            <span class="chip-dot bg-purple-400"></span>Research
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="px-4 pb-2">
+        <div class="flex items-center justify-between text-[10.5px] text-white/20">
+          <span id="result-count">Loading…</span>
+          <button id="sort-btn" class="flex items-center gap-1 hover:text-white/40 transition-colors">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+            </svg>
+            <span id="sort-label">Ranking</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- University List -->
+      <div id="university-list" class="flex-1 overflow-y-auto px-2 pb-3 space-y-0.5 scrollbar-thin">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Country Filter -->
+      <div id="country-panel" class="hidden border-t border-white/[0.05] max-h-[200px] overflow-y-auto scrollbar-thin">
+        <div class="px-4 py-3">
+          <div class="text-[10px] text-white/20 uppercase tracking-widest mb-2 font-semibold">Regions</div>
+          <div id="country-list" class="space-y-0.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Map Container -->
+    <main class="flex-1 relative">
+      <div id="map" class="w-full h-full"></div>
+
+      <!-- Map Controls -->
+      <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <button id="btn-3d" class="map-control-btn" title="Toggle 3D View">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+        <button id="btn-sidebar" class="map-control-btn" title="Toggle Sidebar">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Legend -->
+      <div class="absolute bottom-4 left-4 z-10 glass-panel px-3 py-2 rounded-lg">
+        <div class="text-[9px] text-white/25 uppercase tracking-widest mb-1.5 font-semibold">Score</div>
+        <div class="flex items-center gap-1">
+          <div class="w-2 h-2 rounded-full" style="background: #ef4444;"></div>
+          <span class="text-[9px] text-white/20">Low</span>
+          <div class="w-10 h-1 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 ml-1"></div>
+          <span class="text-[9px] text-white/20">High</span>
+          <div class="w-2 h-2 rounded-full" style="background: #22c55e;"></div>
+        </div>
+      </div>
+
+      <!-- Zoom Level Indicator -->
+      <div id="zoom-indicator" class="absolute bottom-4 right-4 z-10 glass-panel px-3 py-1.5 rounded-lg text-[10px] text-white/20 font-mono hidden">
+      </div>
+    </main>
+
+    <!-- Detail Panel -->
+    <div id="detail-panel" class="detail-panel hidden">
+      <div class="detail-panel-inner">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
