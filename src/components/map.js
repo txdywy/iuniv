@@ -45,9 +45,9 @@ const DARK_STYLE = {
       type: 'raster',
       source: 'osm',
       paint: {
-        'raster-brightness-max': 0.55,
-        'raster-contrast': 0.15,
-        'raster-saturation': -0.4,
+        'raster-brightness-max': 0.85,
+        'raster-contrast': 0.05,
+        'raster-saturation': -0.15,
       },
     },
   ],

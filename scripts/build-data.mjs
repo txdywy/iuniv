@@ -519,8 +519,18 @@ function generateLogos(universities) {
   console.log('🎨 Generating logo URLs...');
   let withLogo = 0;
   for (const uni of universities) {
-    if (uni.domains && uni.domains.length > 0) {
-      const domain = uni.domains[0];
+    // Prefer website URL for favicon (more reliable than Hipolabs domains)
+    let domain = null;
+    if (uni.website) {
+      try {
+        domain = new URL(uni.website).hostname;
+      } catch {}
+    }
+    // Fallback to Hipolabs domain
+    if (!domain && uni.domains && uni.domains.length > 0) {
+      domain = uni.domains[0];
+    }
+    if (domain) {
       uni.logo = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
       withLogo++;
     }
